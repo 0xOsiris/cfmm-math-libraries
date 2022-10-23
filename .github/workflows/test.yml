@@ -28,7 +28,8 @@ jobs:
           forge build --sizes
         id: build
 
-      - name: Run Forge tests
-        run: |
-          forge test -vvv
-        id: test
+      - name: Run tests
+        run: forge test -f${{ secrets.MAINNET_ENDPOINT }} 
+
+      - name: Run snapshot
+        run: forge snapshot -f${{ secrets.MAINNET_ENDPOINT }} 
