@@ -1,34 +1,31 @@
 name: test
 
-on: workflow_dispatch
-
-env:
-  FOUNDRY_PROFILE: ci
+on: 
+  push:
+    branches:
+      - main
+      - development
+  pull_request:
+    branches:
+      - development
+      - main
 
 jobs:
   check:
-    strategy:
-      fail-fast: true
-
-    name: Foundry project
+    name: CFMMMath
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
-
+          
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
           version: nightly
 
-      - name: Run Forge build
-        run: |
-          forge --version
-          forge build --sizes
-        id: build
+      - name: Run tests
+        run: forge test -vvv -f${{ secrets.MAINNET_ENDPOINT }} 
 
-      - name: Run Forge tests
-        run: |
-          forge test -vvv
-        id: test
+      - name: Run snapshot
+        run: forge snapshot -vvv -f${{ secrets.MAINNET_ENDPOINT }}
