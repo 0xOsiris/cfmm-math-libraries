@@ -11,27 +11,28 @@ on:
       - main
 
 jobs:
-  check: 
-    name: CFMMMath
+  check:
+    name: LimitOrders-v0
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
 
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install eth-abi
+        run: pip3 install eth-abi
+
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
           version: nightly
 
-      - name: Run Forge build
-        run: |
-          forge --version
-          forge build --sizes
-        id: build
-
       - name: Run tests
-        run: forge test -f${{ secrets.MAINNET_ENDPOINT }} 
+        run: forge test -vvv -f${{ secrets.MAINNET_ENDPOINT }} 
 
       - name: Run snapshot
-        run: forge snapshot -f${{ secrets.MAINNET_ENDPOINT }} 
+        run: forge snapshot -vvv -f${{ secrets.MAINNET_ENDPOINT }}
