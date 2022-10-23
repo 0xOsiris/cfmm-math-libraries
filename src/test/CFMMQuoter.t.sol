@@ -524,19 +524,13 @@ contract CFMMQuoterTest is DSTest {
 
             (uint160 sqrtRatioBX96, , , , , , ) = IUniswapV3Pool(daiWethPoolV3).slot0();
             uint256 deltaRemovedToValidate = cfmmQuoter._calculateDeltaRemovedOnSqrtPriceChange(sqrtRatioAX96, sqrtRatioBX96, liquidity);
-            
+
             uint256 deltaRemovedUpper = amountReceived + 2;
             uint256 deltaRemovedLower = amountReceived-2;
             assertGt(deltaRemovedToValidate, deltaRemovedLower);
             assertLt(deltaRemovedToValidate, deltaRemovedUpper);
         }
     }
-
-    ///@notice Test to validate the simulated v2 spot change.
-    function testV2SimulateNewSpotFromInput() public {}
-
-    ///@notice Test to validate our v2 quote output on a swap.
-    function testCalculateAmountOutV2() public {}
 }
 
 contract CFMMQuoterWrapper is CFMMQuoter {
