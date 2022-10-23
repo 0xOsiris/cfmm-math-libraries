@@ -12,20 +12,13 @@ on:
 
 jobs:
   check:
-    name: LimitOrders-v0
+    name: CFMMMath
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
-
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-
-      - name: Install eth-abi
-        run: pip3 install eth-abi
-
+          
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
