@@ -112,7 +112,6 @@ contract CFMMQuoter {
             liquidity: liquidity
         });
 
-        ///@notice Calculate the sqrtPriceLimitX96 for the swap by getting the delta price change on the input amount.
         uint160 sqrtPriceLimitX96 = SqrtPriceMath.getNextSqrtPriceFromInput(
             sqrtPriceX96,
             liquidity,
@@ -163,7 +162,6 @@ contract CFMMQuoter {
             ///@notice Decrement the remaining amount to be swapped by the amount available within the tick range.
             currentState.amountSpecifiedRemaining -= (step.amountIn +
                 step.feeAmount).toInt256();
-
             ///@notice Increment amountCalculated by the amount recieved in the tick range.
             currentState.amountCalculated -= step.amountOut.toInt256();
             ///@notice If the swap step crossed into the next tick, and that tick is initialized.
@@ -466,7 +464,10 @@ contract CFMMQuoter {
         uint256 reserve0,
         uint256 reserve1
     ) internal pure returns (uint256 amount1) {
-        require(amount0 !=0 && reserve0 !=0 && reserve1 !=0,"Invalid input");
+        require(
+            amount0 != 0 && reserve0 != 0 && reserve1 != 0,
+            "Invalid input"
+        );
         uint256 amount0WithFee = amount0 * 997;
         uint256 numerator = amount0WithFee * reserve1;
         uint256 denominator = reserve0 * 1000 + (amount0WithFee);
@@ -478,16 +479,19 @@ contract CFMMQuoter {
     ///@param reserve0 The token0 reserves in the pool.
     ///@param reserve1 The token1 reserves in the pool.
     ///@return unsigned The spot price of token0 in 64.64 fixed point.
-    function v2SimulateNewSpotFromInput(uint112 reserve0, uint112 reserve1, uint112 amount0) internal pure returns (uint128){
+    function v2SimulateNewSpotFromInput(
+        uint112 reserve0,
+        uint112 reserve1,
+        uint112 amount0
+    ) internal pure returns (uint128) {
         unchecked {
             uint256 amount0WithFee = amount0 * 997;
-            uint256 newReserve0 = uint256(reserve0) +amount0WithFee;
-            uint256 k = uint256(reserve0)*reserve1;
-            uint256 newReserve1 = (k / newReserve0)/1000;
+            uint256 newReserve0 = uint256(reserve0) + amount0WithFee;
+            uint256 k = uint256(reserve0) * reserve1;
+            uint256 newReserve1 = (k / newReserve0) / 1000;
             uint128 spotPrice = CFMMMath.divuu(newReserve1, newReserve0);
-            require(spotPrice <=MAX_64x64);
+            require(spotPrice <= MAX_64x64);
             return spotPrice;
         }
     }
-
 }
