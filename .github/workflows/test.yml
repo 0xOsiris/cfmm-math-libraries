@@ -1,12 +1,17 @@
 name: test
 
-on: workflow_dispatch
-
-env:
-  FOUNDRY_PROFILE: ci
+on: 
+  push:
+    branches:
+      - main
+      - development
+  pull_request:
+    branches:
+      - development
+      - main
 
 jobs:
-  check:
+  check: CFMMMath
     strategy:
       fail-fast: true
 
