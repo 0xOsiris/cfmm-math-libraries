@@ -142,15 +142,51 @@ function proportionalPriceDifferenceSigned(uint128 x, uint128 y)
 ```
 
 ### Standard Operation Functions
-`fromUInt256` Converts unsigned integer to 64.64 fixed point. </br>
-`toUInt` Converts 64.64 fixed point to unsigned integer. </br>
-`from128x128` Converts 128.128 fixed point to 64.64 fixed point. </br>
-`add64x64` Adds two 64.64 fixed point numbers. </br>
-`sub64x64U` Computes `a - b` where `a` is 64.64 fixed point, and `b` is an unsigned integer. </br>
-`sub64x64I` Computes `a - b` where `a` is 64.64 fixed point, and `b` is an nsigned integer. </br>
-`mul64x64` Computes the product of two 64.64 fixed point numbers. </br>
-`div64x64` Computes `a/b` where a & b are both 64.64 fixed point numbers. </br>
-`divuu` Computes `a/b` where a & b are both unsigned integers and returns the result as 64.64 fixed point number. </br>
-`abs` Computes the absolute value of a signed integer. </br>
-`exp_2` Computes the binary exponent of a 64.64 fixed point number. </br>
-`sqrtu` Computes the square root of an unsigned integer and returns the result as 64.64 fixed point number.</br>
+Converts unsigned integer to 64.64 fixed point. 
+```solidity 
+fromUInt256(uint256 x)
+```
+Converts 64.64 fixed point to unsigned integer. 
+```solidity
+toUInt(uint128 x)
+``` 
+Converts 128.128 fixed point to 64.64 fixed point. </br>
+```solidity
+from128x128(uint256 x)
+```
+Adds two 64.64 fixed point numbers. </br>
+```solidity
+add64x64(uint128 x, uint128 y)
+```
+Computes `a - b` where `a` is 64.64 fixed point, and `b` is an unsigned integer. </br>
+```solidity
+sub64x64U(int128 x, int128 y)
+```
+Computes `a - b` where `a` is 64.64 fixed point, and `b` is an nsigned integer. </br>
+```solidity
+sub64x64I(int128 x, int128 y)
+```
+Computes the product of two 64.64 fixed point numbers. </br>
+```solidity
+mul64x64(uint128 x, uint128 y)
+```
+Computes `a/b` where a & b are both 64.64 fixed point numbers. </br>
+```solidity
+div64x64(uint128 x, uint128 y)
+```
+Computes `a/b` where a & b are both unsigned integers and returns the result as 64.64 fixed point number. </br>
+```solidity
+divuu(uint256 x, uint256 y)
+```
+Computes the absolute value of a signed integer. </br>
+```solidity
+abs(int256 x)
+```
+Computes the binary exponent of a 64.64 fixed point number. </br>
+```solidity
+exp_2(uint128 x)
+```
+Computes the square root of an unsigned integer and returns the result as 64.64 fixed point number.</br>
+```solidity
+sqrtu(uint256 x)
+```
