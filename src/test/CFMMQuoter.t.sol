@@ -71,8 +71,8 @@ contract CFMMQuoterTest is DSTest {
         bool run = true;
         //range 10-10000 dai
         if (
-            amountIn < 10000000000000000000 ||
-            amountIn > 10000000000000000000000
+            amountIn < 1000000000000000000 ||
+            amountIn > 1000000000000000000000
         ) {
             run = false;
         }
@@ -157,8 +157,8 @@ contract CFMMQuoterTest is DSTest {
         bool run = true;
         {
             if (
-                amountIn < 10000000000000000000 ||
-                amountIn > 100000000000000000000
+                amountIn < 1000000000000000000 ||
+                amountIn > 10000000000000000000
             ) {
                 run = false;
             }
@@ -233,8 +233,8 @@ contract CFMMQuoterTest is DSTest {
                 //Make sure we got at least our quote from the swap
                 assertGe(amountReceived, amountOutToValidate);
 
-                //Ensure they are equal within 1000 wei
-                assertEq(amountOutToValidate / 1000, amountOutExpected / 1000);
+                //Ensure they are equal within 10000 wei
+                assertEq(amountOutToValidate / 10000, amountOutExpected / 10000);
             }
         }
     }

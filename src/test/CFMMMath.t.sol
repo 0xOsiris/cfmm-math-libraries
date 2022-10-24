@@ -113,8 +113,8 @@ contract CFMMMathTest is DSTest {
             spot64X,
             true
         );
-        //0.000000001*(2**96)
-        uint160 errorBuffer = 79228162514264340000;
+        //Expect < 0.000000000000001 margin of error on conversion or 0.0000000000001%
+        uint160 errorBuffer = 79228162514264;
         uint160 errorRealized;
         if (sqrtPriceX96ToValidate >= sqrtPriceX96) {
             errorRealized = uint160(
