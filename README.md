@@ -8,7 +8,10 @@
     \|_______|\|__|    \|__|     \|__|\|__|     \|__|        \|__|     \|__|\|__|\|__|    \|__|  \|__|\|__|
    
 ```
+# Overview
 CFMM Math Solidity library & contract for price simulation, fixed point conversion, and swap simulation on v2/v3 pools. The idea behind CFMM math is to provide an out of the box solidity tool suite that allows anyone to simulate, quote, compare, and convert v2/v3 prices seemlessly in a standardized fixed point representation. 
+
+This repository is still very much so a work in progress. The overall goal is to provide a solidity tool suite that acts as an abstraction layer on top of the major dex variants cfmm internal math libraries to allow very simple price comparison, simulation, and conversion by using a standardized fixed point framework. If you have any suggestions or issues, feel free to open an issue and I'll get back to you. Further, collaboration is more than welcome, so feel free to PR :)
 # Installation
 To install as an npm package run:
 ```shell
