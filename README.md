@@ -248,13 +248,11 @@ Adds two 64.64 fixed point numbers. </br>
 add64x64(uint128 x, uint128 y)
 ```
 
-Computes `a - b` where `a` is 64.64 fixed point, and `b` is an unsigned integer. </br>
-
+Computes `a - b` where `a` is 64.64 fixed point, and `b` is a 64.64 fixed point. Returns unsigned 64.64 fixed point. </br>
 ```solidity
 sub64x64U(int128 x, int128 y)
 ```
-
-Computes `a - b` where `a` is 64.64 fixed point, and `b` is an nsigned integer. </br>
+Computes `a - b` where `a` is 64.64 fixed point, and `b` is  is 64.64 fixed point. Returns signed 64.64 fixed point. </br>
 
 ```solidity
 sub64x64I(int128 x, int128 y)
