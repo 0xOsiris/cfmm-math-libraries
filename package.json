@@ -17,8 +17,8 @@
     "url": "git+https://github.com/0xOsiris/CFMMMath.git"
   },
   "files": [
-    "src/*",
-    "src/**/*.sol"
+    "src/libraries",
+    "src/*"
   ],
   "keywords": [
     "Solidity",
