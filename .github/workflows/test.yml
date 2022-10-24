@@ -1,10 +1,16 @@
 name: test
-
-on: 
-
+on:
+  push:
+    branches:
+      - development
+      - main
+  pull_request:
+    branches:
+      - main
+      - development
 jobs:
   check:
-    name: CFMMMath
+    name: cfmm-math-libraries
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -17,7 +23,7 @@ jobs:
           version: nightly
 
       - name: Run tests
-        run: forge test -vvv -f${{ secrets.MAINNET_ENDPOINT }} 
+        run: forge test -vvv -f${{ secrets.MAINNET_ENDPOINT }} --fork-block-number 15233771
 
       - name: Run snapshot
-        run: forge snapshot -vvv -f${{ secrets.MAINNET_ENDPOINT }}
+        run: forge snapshot -vvv -f${{ secrets.MAINNET_ENDPOINT }} --fork-block-number 15233771
