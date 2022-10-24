@@ -12,7 +12,7 @@ library CFMMMath {
     uint128 private constant MAX_64x64 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     ///@notice Decimal bits of a Q96.64 fixed point number, i.e 2**96
-    uint256 internal constant Q96 = 0x1000000000000000000000000;
+    uint160 internal constant Q96 = 0x1000000000000000000000000;
 
     ///@notice minimum unsigned 64.64 fixed point number
     uint256 internal constant MIN_64x64 = 0x0;
@@ -436,7 +436,7 @@ library CFMMMath {
             : _reserve0 * uint112(10)**uint8(shift0);
         reserve1 = shift1 < 0
             ? _reserve1 / uint112(10)**uint8(-shift1)
-            : _reserve0 * uint112(10)**uint8(shift1);
+            : _reserve1 * uint112(10)**uint8(shift1);
     }
 
     //==============================================================Uniswap V3 Standard Helpers===================================================
@@ -503,20 +503,20 @@ library CFMMMath {
             ///@notice Unnormalize based on shift to convert into the spot price as represented in the v3 pool.
             sqrtRatioX96 = shift < 0
                 ? uint160(
-                    (int160(QuadruplePrecision.to64x64(sqrtSpotQuad)) << 32) /
-                        (-shift)
+                    (int160(QuadruplePrecision.to64x64(sqrtSpotQuad) << 32)) /
+                        int160(uint160(10)**uint8(-shift))
                 )
                 : uint160(
-                    (int160(QuadruplePrecision.to64x64(sqrtSpotQuad)) << 32) *
-                        shift
+                    (int160(QuadruplePrecision.to64x64(sqrtSpotQuad) << 32)) *
+                        int160(uint160(10)**uint8(shift))
                 );
             ///@notice Ensure we haven't overflowed.
-            require(sqrtRatioX96 <= Q96);
+            require(sqrtRatioX96 <= type(uint160).max);
             if (!zeroForOne) {
                 ///@notice Take the inverse if zeroForOne is false.
                 sqrtRatioX96 = uint160(FullMath.mulDiv(1, Q96, sqrtRatioX96));
                 ///@notice Ensure we haven't overflowed.
-                require(sqrtRatioX96 <= Q96);
+                require(sqrtRatioX96 <= type(uint160).max);
             }
         }
     }
