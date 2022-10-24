@@ -3,6 +3,7 @@ pragma solidity ^0.8.16;
 
 import "../../lib/libraries/ABDK/QuadruplePrecision.sol";
 import "../../lib/libraries/Uniswap/FullMath.sol";
+import "../../lib/interfaces/uniswap-v3/IUniswapV3Pool.sol";
 
 /// @title Constant Function Market Maker Solidity Fixed point math library. This library can be used to easily convert Cfmm prices into a standardized 64x64 format.
 /// @notice Contains functions for converting prices between 64.64 & Q96.64 fixed point, as well as v2/v3 price simulation and quoting logic.
@@ -441,18 +442,39 @@ library CFMMMath {
 
     //==============================================================Uniswap V3 Standard Helpers===================================================
 
+    ///@notice Helper function to calculate the spot price represented as 64.64 fixed point in a V3 pool.
+    ///@param _lp The v3 pool address.
+    ///@param _zeroForOne Boolean indicating whether to quote token0, or token1.
+    ///@param decimals0 Token0 decimals in the pool.
+    ///@param decimals1 Token1 decimals in the pool.
+    ///@return priceX64 The spot price of token(x) in the pool as 64.64 fixed point.
+    function v3SpotPrice64x64(
+        address _lp,
+        bool _zeroForOne,
+        uint8 decimals0,
+        uint8 decimals1
+    ) internal view returns (uint128 priceX64) {
+        (uint160 sqrtPriceX96, , , , , ) = IUniswapV3Pool(_lp).slot0();
+        priceX64 = fromSqrtX96ToX64(
+            decimals0,
+            decimals1,
+            sqrtPriceX96,
+            _zeroForOne
+        );
+    }
+
     ///@notice Function to convers a SqrtPrice Q96.64 fixed point to Price as 64.64 fixed point resolution.
     ///@dev token0 is token0 on the pool, and token1 is token1 on the pool. Not tokenIn,tokenOut on the swap.
     ///@param decimals0 Token0 in the pool.
     ///@param decimals1 Token1 in the pool.
     ///@param sqrtPriceX96 The slot0 sqrtPriceX96 on the pool.
-    ///@param token0IsReserve0 Bool indicating whether the tokenIn to be quoted is token0 on the pool.
+    ///@param zeroForOne Bool indicating whether the tokenIn to be quoted is token0 on the pool.
     ///@return priceX64 The spot price of TokenIn as 64.64 fixed point.
     function fromSqrtX96ToX64(
         uint8 decimals0,
         uint8 decimals1,
         uint160 sqrtPriceX96,
-        bool token0IsReserve0
+        bool zeroForOne
     ) internal pure returns (uint128 priceX64) {
         unchecked {
             ///@notice Cache the difference between the input and output token decimals. p=y/x ==> p*10**(x_decimals-y_decimals)>>Q192 will be the proper price in base 10.
