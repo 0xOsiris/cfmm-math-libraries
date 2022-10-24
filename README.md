@@ -7,7 +7,7 @@
    \ \_______\ \__\   \ \__\    \ \__\ \__\    \ \__\       \ \__\    \ \__\ \__\ \__\   \ \__\ \ \__\ \__\
     \|_______|\|__|    \|__|     \|__|\|__|     \|__|        \|__|     \|__|\|__|\|__|    \|__|  \|__|\|__|
 ```
-Comprehensive CFMM Math libraries for price simulation, fixed point conversion, and swap simulation on v2/v3 pools. The idea behind CFMM math is to provide an out of the box solidity tool suite that provides allows anyone to simulate, quoter, compare, and convert v2/v3 prices seemlessly. 
+Comprehensive CFMM Math libraries for price simulation, fixed point conversion, and swap simulation on v2/v3 pools. The idea behind CFMM math is to provide an out of the box solidity tool suite that allows anyone to simulate, quote, compare, and convert v2/v3 prices seemlessly in a standardized fixed point representation. 
 # Test Instructions
 From the project route. </br>
 Run Test Suite: `forge test -f <RPC_ENDPOINT>  --fork-block-number 15233771` </br>
@@ -15,7 +15,7 @@ Run Gas Snapshot: `forge snapshot -f <RPC_ENDPOINT> --fork-block-number 15233771
 
 # Features
 ## CFMMQuoter
-`CFMMQuoter.sol` offers a comprehensive tool suite for quoting amounts yielded from swaps, simulating price changes from input/output quantities, and inferring input/output quantities introduced/removed from a pool based on price changes. 
+`CFMMQuoter.sol` offers a comprehensive tool suite for quoting amounts yielded from swaps, simulating price changes from input/output quantities, and inferring input/output quantities introduced/removed from a pool based on price changes. `CFMMQuoter` is a contract not a library. So, to cheaply utilize all of its core functions in your contract you can simply inherit `CFMMQuoter`.
 ### V3 Features
 Precisely quotes the amount yielded from a swap on a v3 pool. This function can be used to determine a precise amountOutMin for a v3 swap on chain, and eliminates the need to use the v3 quoter saving a significant amount of gas. 
 ```
