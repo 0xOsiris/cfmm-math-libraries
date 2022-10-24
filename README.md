@@ -191,10 +191,11 @@ sqrtu(uint256 x)
 ```
 
 # Additional Features Coming Soon
-1.) Derive input quantity from 2 v2 prices.
-2.) Simulate Tick Change on output V3
-3.) Simulate amountIn on exact output sqrtPriceX96 V3.
-4.) DODO Architecture Integration
-5.) Curve Architecture Integration
+1.) Derive input quantity from 2 v2 prices. </br>
+2.) Simulate Tick Change on output V3 </br>
+3.) Simulate amountIn on exact output sqrtPriceX96 V3. </br>
+4.) DODO Architecture Integration </br>
+5.) Curve Architecture Integration </br>
+
 
 Additionally feel free to open an issue on any features you would like integrated! 
