@@ -1,9 +1,9 @@
 {
   "name": "cfmm-math-libraries",
-  "version": "1.0.2",
+  "version": "1.0.7",
   "description": "Comprehensive CFMM Solidity Math libraries for price simulation, fixed point conversion, and swap simulation on v2/v3 pools.",
   "publishConfig": {
-    "access": "public"
+    "registry":"https://npm.pkg.github.com"
   },
   "directories": {
     "lib": "lib",
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/0xOsiris/CFMMMath.git"
+    "url": "https://github.com/0xOsiris/cfmm-math-libraries.git"
   },
   "files": [
     "src/libraries",
@@ -35,8 +35,8 @@
   "author": "0xOsiris",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/0xOsiris/CFMMMath/issues"
+    "url": "https://github.com/0xOsiris/cfmm-math-libraries/issues"
   },
-  "homepage": "https://github.com/0xOsiris/CFMMMath#readme"
+  "homepage": "https://github.com/0xOsiris/cfmm-math-libraries#readme"
   
 }
