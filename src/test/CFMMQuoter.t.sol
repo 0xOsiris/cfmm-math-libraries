@@ -41,6 +41,9 @@ contract CFMMQuoterTest is DSTest {
     address usdcDaiPoolV3 = 0x6c6Bc977E13Df9b0de53b251522280BB72383700;
     uint24 constant USDC_DAI_FEE = 500;
 
+    ///@notice Test V2 Pool addresses and pool fees.
+    address daiWethV2 = 0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11;
+
     ///@notice Set the v2 router address for test swaps.
     address v2Router = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
 
@@ -68,8 +71,8 @@ contract CFMMQuoterTest is DSTest {
         bool run = true;
         //range 10-10000 dai
         if (
-            amountIn < 10000000000000000000 ||
-            amountIn > 10000000000000000000000
+            amountIn < 1000000000000000000 ||
+            amountIn > 1000000000000000000000
         ) {
             run = false;
         }
@@ -141,8 +144,8 @@ contract CFMMQuoterTest is DSTest {
                 //Make sure we got at least our quote from the swap
                 assertGe(amountReceived, amountOutToValidate);
 
-                //Ensure they are equal within 1000 wei
-                assertEq(amountOutToValidate / 1000, amountOutExpected / 1000);
+                //Ensure they are equal within 10000 wei
+                assertEq(amountOutToValidate / 10000, amountOutExpected / 10000);
             }
         }
     }
@@ -154,8 +157,8 @@ contract CFMMQuoterTest is DSTest {
         bool run = true;
         {
             if (
-                amountIn < 10000000000000000000 ||
-                amountIn > 100000000000000000000
+                amountIn < 1000000000000000000 ||
+                amountIn > 10000000000000000000
             ) {
                 run = false;
             }
@@ -230,8 +233,8 @@ contract CFMMQuoterTest is DSTest {
                 //Make sure we got at least our quote from the swap
                 assertGe(amountReceived, amountOutToValidate);
 
-                //Ensure they are equal within 1000 wei
-                assertEq(amountOutToValidate / 1000, amountOutExpected / 1000);
+                //Ensure they are equal within 10000 wei
+                assertEq(amountOutToValidate / 10000, amountOutExpected / 10000);
             }
         }
     }
@@ -531,6 +534,8 @@ contract CFMMQuoterTest is DSTest {
             assertLt(deltaRemovedToValidate, deltaRemovedUpper);
         }
     }
+
+    
 }
 
 contract CFMMQuoterWrapper is CFMMQuoter {
