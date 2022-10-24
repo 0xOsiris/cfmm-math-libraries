@@ -14,6 +14,31 @@ To install as an npm package run:
 ```shell
 npm i cfmm-math-libraries
 ```
+If you are using foundry add the following to your `foundry.toml`: </br>
+```shell
+remappings=["cfmm-math-libraries/=node_modules/cfmm-math-libraries/"]
+```
+Alternatively add 
+```json
+"solidity.remappingsUnix": [
+        "@cfmm-math-libraries/=node_modules/cfmm-math-libraries/",
+   ]
+``` 
+to your `settings.json` in vscode.
+
+Finally, simply import the contract and library into your contract:
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.16;
+
+import "cfmm-math-libraries/src/CFMMQuoter.sol";
+import "cfmm-math-libraries/src/libraries/CFMMMath.sol";
+```
+
+Inherit `CFMMQuoter` into your contract to access all internal logic:
+```solidity
+contract MyContract is CFMMQuoter {}
+```
 # Test Instructions
 From the project route. </br>
 Run Test Suite: 
