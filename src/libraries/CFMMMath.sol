@@ -454,7 +454,7 @@ library CFMMMath {
         uint8 decimals0,
         uint8 decimals1
     ) internal view returns (uint128 priceX64) {
-        (uint160 sqrtPriceX96, , , , , ) = IUniswapV3Pool(_lp).slot0();
+        (uint160 sqrtPriceX96, , , , , , ) = IUniswapV3Pool(_lp).slot0();
         priceX64 = fromSqrtX96ToX64(
             decimals0,
             decimals1,
@@ -485,13 +485,13 @@ library CFMMMath {
                 : uint256(sqrtPriceX96)**2 * 10**uint8(decimalShift);
 
             ///@notice The first value is a Q96 representation of p_token0, the second is 128X fixed point representation of p_token1.
-            uint256 priceSquaredShiftQ96 = token0IsReserve0
+            uint256 priceSquaredShiftQ96 = zeroForOne
                 ? priceSquaredX96 / Q96
                 : (Q96 * 0xffffffffffffffffffffffffffffffff) /
                     (priceSquaredX96 / Q96);
 
             ///@notice Convert the first value to 128X fixed point by shifting it left 128 bits and normalizing the value by Q96.
-            uint256 priceX128 = token0IsReserve0
+            uint256 priceX128 = zeroForOne
                 ? (uint256(priceSquaredShiftQ96) *
                     0xffffffffffffffffffffffffffffffff) / Q96
                 : priceSquaredShiftQ96;

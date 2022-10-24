@@ -150,6 +150,7 @@ CFMMMath provdes a tool suite for mathematical operations in 64.64 fixed point.
 
 ### V3 Functions
 Calculates the spot price of token(x) in a pool represented as 64.64 fixed point.
+
 ```solidity
 function v3SpotPrice64x64(
         address _lp,
