@@ -8,7 +8,6 @@
     \|_______|\|__|    \|__|     \|__|\|__|     \|__|        \|__|     \|__|\|__|\|__|    \|__|  \|__|\|__|
    
 ```
-
 Comprehensive CFMM Math libraries for price simulation, fixed point conversion, and swap simulation on v2/v3 pools. The idea behind CFMM math is to provide an out of the box solidity tool suite that allows anyone to simulate, quote, compare, and convert v2/v3 prices seemlessly in a standardized fixed point representation. 
 # Installation
 To install as an npm package run:
@@ -190,3 +189,12 @@ Computes the square root of an unsigned integer and returns the result as 64.64 
 ```solidity
 sqrtu(uint256 x)
 ```
+
+# Additional Features Coming Soon
+1.) Derive input quantity from 2 v2 prices.
+2.) Simulate Tick Change on output V3
+3.) Simulate amountIn on exact output sqrtPriceX96 V3.
+4.) DODO Architecture Integration
+5.) Curve Architecture Integration
+
+Additionally feel free to open an issue on any features you would like integrated! 
