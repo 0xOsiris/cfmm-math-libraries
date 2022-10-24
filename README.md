@@ -20,20 +20,20 @@ This repository is still very much so a work in progress. The overall goal is to
 To install as an npm package run:
 
 ```shell
-npm i cfmm-math-libraries
+npm install @0xosiris/cfmm-math-libraries@1.1.2
 ```
 
 If you are using foundry add the following to your `foundry.toml`: </br>
 
 ```shell
-remappings=["cfmm-math-libraries/=node_modules/cfmm-math-libraries/"]
+remappings=["cfmm-math-libraries/=node_modules/@0xosiris/cfmm-math-libraries/"]
 ```
 
 Alternatively add
 
 ```json
 "solidity.remappingsUnix": [
-        "@cfmm-math-libraries/=node_modules/cfmm-math-libraries/",
+        "cfmm-math-libraries/=node_modules/@0xosiris/cfmm-math-libraries/",
    ]
 ```
 
