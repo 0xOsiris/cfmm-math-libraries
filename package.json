@@ -1,6 +1,6 @@
 {
   "name": "@0xosiris/cfmm-math-libraries",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Comprehensive CFMM Solidity Math libraries for price simulation, fixed point conversion, and swap simulation on v2/v3 pools.",
   "publishConfig": {
     "access": "public",
