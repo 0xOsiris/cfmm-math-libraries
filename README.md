@@ -6,8 +6,15 @@
   \ \  \____\ \  \_| \ \  \    \ \  \ \  \    \ \  \       \ \  \    \ \  \ \  \ \  \   \ \  \ \ \  \ \  \ 
    \ \_______\ \__\   \ \__\    \ \__\ \__\    \ \__\       \ \__\    \ \__\ \__\ \__\   \ \__\ \ \__\ \__\
     \|_______|\|__|    \|__|     \|__|\|__|     \|__|        \|__|     \|__|\|__|\|__|    \|__|  \|__|\|__|
+   
 ```
+
 Comprehensive CFMM Math libraries for price simulation, fixed point conversion, and swap simulation on v2/v3 pools. The idea behind CFMM math is to provide an out of the box solidity tool suite that allows anyone to simulate, quote, compare, and convert v2/v3 prices seemlessly in a standardized fixed point representation. 
+# Installation
+To install as an npm package run:
+```shell
+npm i cfmm-math-libraries
+```
 # Test Instructions
 From the project route. </br>
 Run Test Suite: 
