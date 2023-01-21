@@ -89,7 +89,7 @@ contract CFMMQuoter {
     ) internal view returns (int256 amountOut, uint160 nextSqrtPriceX96) {
         ///@notice If token0 in the pool is tokenIn then set zeroForOne to true.
         bool zeroForOne = token0 == tokenIn ? true : false;
-        
+
         CurrentState memory currentState;
 
         ///@notice Scope to prevent stack too deep.
@@ -200,50 +200,13 @@ contract CFMMQuoter {
     }
 
     ///@notice Helper function to calculate the sqrtPriceLimitX96 for a swap.
-    ///@param sqrtPriceX96 The current sqrtPrice in the pool.
-    ///@param liquidity The current liquidity in the v3 pool.
-    ///@param amountIn The input amount used to simulate the price change.
     ///@param zeroForOne Bool indicating whether the amountIn is on token0 or token1 in the pool.
     ///@return sqrtPriceLimitX96 The upper bound on the price change in the pool.
     ///@dev sqrtPriceLimitX96 can be used as a valid swap parameter on the pool when interacting with the pool directly and circumventing the SwapRouter.
     function calculateSqrtPriceLimitX96(
-        uint160 sqrtPriceX96,
-        uint128 liquidity,
-        uint128 amountIn,
         bool zeroForOne
     ) internal pure returns (uint160 sqrtPriceLimitX96) {
-        ///@notice Calculate the price change in the pool on the input quantity.
-        sqrtPriceLimitX96 = SqrtPriceMath.getNextSqrtPriceFromInput(
-            sqrtPriceX96,
-            liquidity,
-            amountIn,
-            zeroForOne
-        );
-    }
-
-    ///@notice Helper function to calculate the sqrtPriceLimitX96 for a swap.
-    ///@param poolAddress The address of the v3 pool.
-    ///@param amountIn The input amount used to simulate the price change.
-    ///@param zeroForOne Bool indicating whether the amountIn is on token0 or token1 in the pool.
-    ///@return sqrtPriceLimitX96 The upper bound on the price change in the pool.
-    ///@dev sqrtPriceLimitX96 can be used as a valid swap parameter on the pool when interacting with the pool directly and circumventing the SwapRouter.
-    function calculateSqrtPriceLimitX96Simple(
-        address poolAddress,
-        uint128 amountIn,
-        bool zeroForOne
-    ) internal view returns (uint160 sqrtPriceLimitX96) {
-        ///@notice Get the current price of the pool.
-        (uint160 sqrtPriceX96, , , , , , ) = IUniswapV3Pool(poolAddress)
-            .slot0();
-        ///@notice Get the current liquidity in the pool.
-        uint128 liquidity = IUniswapV3Pool(poolAddress).liquidity();
-        ///@notice Calculate the price change in the pool on the input quantity.
-        sqrtPriceLimitX96 = SqrtPriceMath.getNextSqrtPriceFromInput(
-            sqrtPriceX96,
-            liquidity,
-            amountIn,
-            zeroForOne
-        );
+        return zeroForOne ? TickMath.MIN_SQRT_RATIO + 1 : TickMath.MAX_SQRT_RATIO - 1;
     }
 
     ///@notice Helper function to determine the upper limit tick from a swap.

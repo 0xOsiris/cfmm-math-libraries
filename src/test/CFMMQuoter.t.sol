@@ -71,8 +71,7 @@ contract CFMMQuoterTest is DSTest {
         bool run = true;
         //range 10-10000 dai
         if (
-            amountIn < 1000000000000000000 ||
-            amountIn > 1000000000000000000000
+            amountIn < 1000000000000000000 || amountIn > 1000000000000000000000
         ) {
             run = false;
         }
@@ -94,8 +93,8 @@ contract CFMMQuoterTest is DSTest {
             );
 
             //Get the quoted amount out from _simulateAmountOutOnSqrtPriceX96.
-            (int256 amountOutToValidate, ) = 
-                cfmmQuoter._simulateAmountOutOnSqrtPriceX96(
+            (int256 amountOutToValidate, ) = cfmmQuoter
+                ._simulateAmountOutOnSqrtPriceX96(
                     token0,
                     DAI,
                     daiWethPoolV3,
@@ -104,7 +103,6 @@ contract CFMMQuoterTest is DSTest {
                     liquidity,
                     DAI_WETH_FEE
                 );
-            
 
             //Get the expected amountOut in Dai from the v3 quoter.
             uint256 amountOutExpected = iQuoter.quoteExactInputSingle(
@@ -115,7 +113,6 @@ contract CFMMQuoterTest is DSTest {
                 sqrtPriceLimitX96
             );
 
-        
             {
                 //Deal the swapHelper eth
                 cheatCodes.deal(address(testSwapper), type(uint128).max);
@@ -180,8 +177,8 @@ contract CFMMQuoterTest is DSTest {
             );
 
             //Get the quoted amount out from _simulateAmountOutOnSqrtPriceX96.
-            (int256 amountOutToValidate,) = 
-                cfmmQuoter._simulateAmountOutOnSqrtPriceX96(
+            (int256 amountOutToValidate, ) = cfmmQuoter
+                ._simulateAmountOutOnSqrtPriceX96(
                     token0,
                     WETH,
                     daiWethPoolV3,
@@ -190,7 +187,6 @@ contract CFMMQuoterTest is DSTest {
                     liquidity,
                     DAI_WETH_FEE
                 );
-          
 
             //Get the expected amountOut in Dai from the v3 quoter.
             uint256 amountOutExpected = iQuoter.quoteExactInputSingle(
@@ -200,8 +196,6 @@ contract CFMMQuoterTest is DSTest {
                 amountIn,
                 sqrtPriceLimitX96
             );
-
-         
 
             {
                 //Deal some ether to the test contract
@@ -231,8 +225,6 @@ contract CFMMQuoterTest is DSTest {
                 assertEq(amountOutExpected, uint256(-amountOutToValidate));
                 //Make sure we got at least our quote from the swap
                 assertGe(amountReceived, uint256(-amountOutToValidate));
-
-                
             }
         }
     }
@@ -257,9 +249,6 @@ contract CFMMQuoterTest is DSTest {
 
             //Calculate the change in price on the input quantity
             uint160 sqrtPriceLimitX96 = cfmmQuoter._calculateSqrtPriceLimitX96(
-                sqrtPriceX96,
-                liquidity,
-                amountIn,
                 true
             );
 
@@ -291,58 +280,20 @@ contract CFMMQuoterTest is DSTest {
     }
 
     ///@notice Validates the computed sqrtPriceLimitX96 by mocking a v3 swap.
-    function testCalculateSqrtPriceLimitX96_ZeroForOne_False(uint112 amountIn)
+    function testCalculateSqrtPriceLimitX96()
         public
     {
-        bool run = true;
-        //range 10-10000 dai
-        if (
-            amountIn < 10000000000000000000 || amountIn > 100000000000000000000
-        ) {
-            run = false;
-        }
+        //Calculate the change in price on the input quantity
+        uint160 sqrtPriceLimitX96ZeroForOneFalse = cfmmQuoter._calculateSqrtPriceLimitX96(
+            false
+        );
 
-        if (run) {
-            //Grab all relevant storage data from the v3 pool
-            (uint160 sqrtPriceX96, , , , , , ) = IUniswapV3Pool(daiWethPoolV3)
-                .slot0();
-            uint128 liquidity = IUniswapV3Pool(daiWethPoolV3).liquidity();
+        uint160 sqrtPriceLimitX96ZeroForOneTrue = cfmmQuoter._calculateSqrtPriceLimitX96(
+            true
+        );
 
-            //Calculate the change in price on the input quantity
-            uint160 sqrtPriceLimitX96 = cfmmQuoter._calculateSqrtPriceLimitX96(
-                sqrtPriceX96,
-                liquidity,
-                amountIn,
-                false
-            );
-
-            {
-                //Deal some ether to the test contract
-                cheatCodes.deal(address(this), amountIn + type(uint16).max);
-
-                //Wrap the Ether
-                address(WETH).call{value: amountIn + type(uint16).max}(
-                    abi.encodeWithSignature("deposit()")
-                );
-
-                //Transfer the input amount to the SwapRotuer contract to be sent to the pool in the swap callback.
-                IERC20(WETH).transfer(
-                    address(testSwapperV3),
-                    amountIn + type(uint16).max
-                );
-
-                //Attempt a swap on our derived sqrtPriceLimit
-                uint256 amountReceived = testSwapperV3.swapV3(
-                    daiWethPoolV3,
-                    false,
-                    WETH,
-                    amountIn,
-                    1,
-                    sqrtPriceLimitX96,
-                    address(this)
-                );
-            }
-        }
+        assertEq(sqrtPriceLimitX96ZeroForOneFalse, TickMath.MAX_SQRT_RATIO - 1);
+        assertEq(sqrtPriceLimitX96ZeroForOneTrue, TickMath.MIN_SQRT_RATIO + 1);
     }
 
     ///@notice Validates the computed tick after simulating the amountIn on the v3 pool.
@@ -364,9 +315,6 @@ contract CFMMQuoterTest is DSTest {
 
             //Calculate the change in price on the input quantity
             uint160 sqrtPriceLimitX96 = cfmmQuoter._calculateSqrtPriceLimitX96(
-                sqrtPriceX96,
-                liquidity,
-                amountIn,
                 false
             );
 
@@ -433,10 +381,9 @@ contract CFMMQuoterTest is DSTest {
             (uint160 sqrtRatioAX96, , , , , , ) = IUniswapV3Pool(daiWethPoolV3)
                 .slot0();
             uint128 liquidity = IUniswapV3Pool(daiWethPoolV3).liquidity();
-            
 
             //Calculate the change in price on the input quantity
-            uint160 sqrtPriceLimitX96 = cfmmQuoter._calculateSqrtPriceLimitX96(
+            uint160 sqrtPriceLimitX96 = SqrtPriceMath.getNextSqrtPriceFromInput(
                 sqrtRatioAX96,
                 liquidity,
                 deltaAdded,
@@ -462,22 +409,27 @@ contract CFMMQuoterTest is DSTest {
                 address(this)
             );
 
-
-            uint256 deltaAddedToValidate = cfmmQuoter._calculateDeltaAddedOnSqrtPriceChange(sqrtRatioAX96, sqrtPriceLimitX96, liquidity);
+            uint256 deltaAddedToValidate = cfmmQuoter
+                ._calculateDeltaAddedOnSqrtPriceChange(
+                    sqrtRatioAX96,
+                    sqrtPriceLimitX96,
+                    liquidity
+                );
             uint256 deltaAddedUpper = deltaAdded + 2;
-            uint256 deltaAddedLower = deltaAdded-2;
+            uint256 deltaAddedLower = deltaAdded - 2;
             assertGt(deltaAddedToValidate, deltaAddedLower);
             assertLt(deltaAddedToValidate, deltaAddedUpper);
         }
     }
 
     ///@notice Validates the computed delta removed on the price change.
-    function testCalculateDeltaRemovedOnSqrtPriceChange(uint112 amountIn) public {
+    function testCalculateDeltaRemovedOnSqrtPriceChange(uint112 amountIn)
+        public
+    {
         bool run = true;
         //range 10-10000 dai
         if (
-            amountIn < 10000000000000000000 ||
-            amountIn > 100000000000000000000
+            amountIn < 10000000000000000000 || amountIn > 100000000000000000000
         ) {
             run = false;
         }
@@ -487,15 +439,15 @@ contract CFMMQuoterTest is DSTest {
             (uint160 sqrtRatioAX96, , , , , , ) = IUniswapV3Pool(daiWethPoolV3)
                 .slot0();
             uint128 liquidity = IUniswapV3Pool(daiWethPoolV3).liquidity();
-            
 
             //Calculate the change in price on the input quantity
-            uint160 sqrtPriceLimitX96 = cfmmQuoter._calculateSqrtPriceLimitX96(
+            uint160 sqrtPriceLimitX96 = SqrtPriceMath.getNextSqrtPriceFromInput(
                 sqrtRatioAX96,
                 liquidity,
                 amountIn,
                 true
             );
+
             //Deal the swapHelper eth
             cheatCodes.deal(address(testSwapper), type(uint128).max);
 
@@ -523,17 +475,21 @@ contract CFMMQuoterTest is DSTest {
                 address(this)
             );
 
-            (uint160 sqrtRatioBX96, , , , , , ) = IUniswapV3Pool(daiWethPoolV3).slot0();
-            uint256 deltaRemovedToValidate = cfmmQuoter._calculateDeltaRemovedOnSqrtPriceChange(sqrtRatioAX96, sqrtRatioBX96, liquidity);
+            (uint160 sqrtRatioBX96, , , , , , ) = IUniswapV3Pool(daiWethPoolV3)
+                .slot0();
+            uint256 deltaRemovedToValidate = cfmmQuoter
+                ._calculateDeltaRemovedOnSqrtPriceChange(
+                    sqrtRatioAX96,
+                    sqrtRatioBX96,
+                    liquidity
+                );
 
             uint256 deltaRemovedUpper = amountReceived + 2;
-            uint256 deltaRemovedLower = amountReceived-2;
+            uint256 deltaRemovedLower = amountReceived - 2;
             assertGt(deltaRemovedToValidate, deltaRemovedLower);
             assertLt(deltaRemovedToValidate, deltaRemovedUpper);
         }
     }
-
-    
 }
 
 contract CFMMQuoterWrapper is CFMMQuoter {
@@ -558,28 +514,12 @@ contract CFMMQuoterWrapper is CFMMQuoter {
             );
     }
 
-    function _calculateSqrtPriceLimitX96(
-        uint160 sqrtPriceX96,
-        uint128 liquidity,
-        uint128 amountIn,
-        bool zeroForOne
-    ) public pure returns (uint160 sqrtPriceLimitX96) {
-        return
-            calculateSqrtPriceLimitX96(
-                sqrtPriceX96,
-                liquidity,
-                amountIn,
-                zeroForOne
-            );
-    }
-
-    function _calculateSqrtPriceLimitX96Simple(
-        address poolAddress,
-        uint128 amountIn,
-        bool zeroForOne
-    ) public view returns (uint160 sqrtPriceLimitX96) {
-        return
-            calculateSqrtPriceLimitX96Simple(poolAddress, amountIn, zeroForOne);
+    function _calculateSqrtPriceLimitX96(bool zeroForOne)
+        public
+        pure
+        returns (uint160 sqrtPriceLimitX96)
+    {
+        return calculateSqrtPriceLimitX96(zeroForOne);
     }
 
     function _simulateNewTickOnInputAmountPrecise(
