@@ -94,8 +94,8 @@ contract CFMMQuoterTest is DSTest {
             );
 
             //Get the quoted amount out from _simulateAmountOutOnSqrtPriceX96.
-            uint256 amountOutToValidate = uint256(
-                -cfmmQuoter._simulateAmountOutOnSqrtPriceX96(
+            (int256 amountOutToValidate, ) = 
+                cfmmQuoter._simulateAmountOutOnSqrtPriceX96(
                     token0,
                     DAI,
                     daiWethPoolV3,
@@ -103,8 +103,8 @@ contract CFMMQuoterTest is DSTest {
                     tickSpacing,
                     liquidity,
                     DAI_WETH_FEE
-                )
-            );
+                );
+            
 
             //Get the expected amountOut in Dai from the v3 quoter.
             uint256 amountOutExpected = iQuoter.quoteExactInputSingle(
@@ -115,8 +115,7 @@ contract CFMMQuoterTest is DSTest {
                 sqrtPriceLimitX96
             );
 
-            console.log(amountOutToValidate);
-
+        
             {
                 //Deal the swapHelper eth
                 cheatCodes.deal(address(testSwapper), type(uint128).max);
@@ -136,16 +135,16 @@ contract CFMMQuoterTest is DSTest {
                     true,
                     DAI,
                     amountIn,
-                    amountOutToValidate,
+                    uint256(-amountOutToValidate),
                     sqrtPriceLimitX96,
                     address(this)
                 );
 
                 //Make sure we got at least our quote from the swap
-                assertGe(amountReceived, amountOutToValidate);
+                assertGe(amountReceived, uint256(-amountOutToValidate));
 
                 //Ensure they are equal within 10000 wei
-                assertEq(amountOutToValidate / 10000, amountOutExpected / 10000);
+                assertEq(uint256(-amountOutToValidate), amountOutExpected);
             }
         }
     }
@@ -181,8 +180,8 @@ contract CFMMQuoterTest is DSTest {
             );
 
             //Get the quoted amount out from _simulateAmountOutOnSqrtPriceX96.
-            uint256 amountOutToValidate = uint256(
-                -cfmmQuoter._simulateAmountOutOnSqrtPriceX96(
+            (int256 amountOutToValidate,) = 
+                cfmmQuoter._simulateAmountOutOnSqrtPriceX96(
                     token0,
                     WETH,
                     daiWethPoolV3,
@@ -190,8 +189,8 @@ contract CFMMQuoterTest is DSTest {
                     tickSpacing,
                     liquidity,
                     DAI_WETH_FEE
-                )
-            );
+                );
+          
 
             //Get the expected amountOut in Dai from the v3 quoter.
             uint256 amountOutExpected = iQuoter.quoteExactInputSingle(
@@ -202,7 +201,7 @@ contract CFMMQuoterTest is DSTest {
                 sqrtPriceLimitX96
             );
 
-            console.log(amountOutToValidate);
+         
 
             {
                 //Deal some ether to the test contract
@@ -225,16 +224,15 @@ contract CFMMQuoterTest is DSTest {
                     false,
                     WETH,
                     amountIn,
-                    amountOutToValidate,
+                    uint256(-amountOutToValidate),
                     sqrtPriceLimitX96,
                     address(this)
                 );
-
+                assertEq(amountOutExpected, uint256(-amountOutToValidate));
                 //Make sure we got at least our quote from the swap
-                assertGe(amountReceived, amountOutToValidate);
+                assertGe(amountReceived, uint256(-amountOutToValidate));
 
-                //Ensure they are equal within 10000 wei
-                assertEq(amountOutToValidate / 10000, amountOutExpected / 10000);
+                
             }
         }
     }
@@ -547,7 +545,7 @@ contract CFMMQuoterWrapper is CFMMQuoter {
         int24 tickSpacing,
         uint128 liquidity,
         uint24 fee
-    ) public returns (int256 amountOut) {
+    ) public returns (int256 amountOut, uint160 sqrtPriceX96) {
         return
             simulateAmountOutOnSqrtPriceX96(
                 token0,

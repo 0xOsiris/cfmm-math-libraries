@@ -33,14 +33,6 @@ contract CFMMQuoter {
     ///@notice Q96 shift constant i.e. 2**96 in hexidecimal.
     uint256 internal constant Q96 = 0x1000000000000000000000000;
 
-    //==================================================Uniswap V3 Storage Variables=====================================================//
-
-    ///@notice Storage mapping to hold the tickBitmap for a v3 pool.
-    mapping(int16 => uint256) public tickBitmap;
-
-    ///@notice Storage mapping to map a tick to the relevant liquidity data on that tick in a pool.
-    mapping(int24 => Tick.Info) public ticks;
-
     //-----------------------------------------------------------Structs-------------------------------------------------------------------//
 
     ///@notice Struct holding the current simulated swap state.
@@ -81,7 +73,7 @@ contract CFMMQuoter {
     ///@notice Function to simulate the change in sqrt price on a uniswap v3 swap.
     ///@param token0 Token 0 in the v3 pool.
     ///@param tokenIn Token 0 in the v3 pool.
-    ///@param lpAddressAToWeth The tokenA to weth liquidity pool address.
+    ///@param pool The address of the pool.
     ///@param amountIn The amount in to simulate the price change on.
     ///@param tickSpacing The tick spacing on the pool.
     ///@param liquidity The liquidity in the pool.
@@ -89,35 +81,43 @@ contract CFMMQuoter {
     function simulateAmountOutOnSqrtPriceX96(
         address token0,
         address tokenIn,
-        address lpAddressAToWeth,
+        address pool,
         uint256 amountIn,
         int24 tickSpacing,
         uint128 liquidity,
         uint24 fee
-    ) internal returns (int256 amountOut) {
+    ) internal view returns (int256 amountOut, uint160 nextSqrtPriceX96) {
         ///@notice If token0 in the pool is tokenIn then set zeroForOne to true.
         bool zeroForOne = token0 == tokenIn ? true : false;
+        
+        CurrentState memory currentState;
 
-        ///@notice Grab the current price and the current tick in the pool.
-        (uint160 sqrtPriceX96, int24 initialTick, , , , , ) = IUniswapV3Pool(
-            lpAddressAToWeth
-        ).slot0();
+        ///@notice Scope to prevent stack too deep.
+        {
+            ///@notice Grab the current price and the current tick in the pool.
+            (
+                uint160 sqrtPriceX96,
+                int24 initialTick,
+                ,
+                ,
+                ,
+                ,
 
-        ///@notice Initialize the initial simulation state
-        CurrentState memory currentState = CurrentState({
-            sqrtPriceX96: sqrtPriceX96,
-            amountCalculated: 0,
-            amountSpecifiedRemaining: int256(amountIn),
-            tick: initialTick,
-            liquidity: liquidity
-        });
+            ) = IUniswapV3Pool(pool).slot0();
 
-        uint160 sqrtPriceLimitX96 = SqrtPriceMath.getNextSqrtPriceFromInput(
-            sqrtPriceX96,
-            liquidity,
-            amountIn,
-            zeroForOne
-        );
+            ///@notice Initialize the initial simulation state
+            currentState = CurrentState({
+                sqrtPriceX96: sqrtPriceX96,
+                amountCalculated: 0,
+                amountSpecifiedRemaining: int256(amountIn),
+                tick: initialTick,
+                liquidity: liquidity
+            });
+        }
+
+        uint160 sqrtPriceLimitX96 = zeroForOne
+            ? TickMath.MIN_SQRT_RATIO + 1
+            : TickMath.MAX_SQRT_RATIO - 1;
 
         ///@notice While the current state still has an amount to swap continue.
         while (currentState.amountSpecifiedRemaining > 0) {
@@ -126,11 +126,12 @@ contract CFMMQuoter {
             ///@notice Set sqrtPriceStartX96.
             step.sqrtPriceStartX96 = currentState.sqrtPriceX96;
             ///@notice Set the tickNext, and if the tick is initialized.
-            (step.tickNext, step.initialized) = tickBitmap
+            (step.tickNext, step.initialized) = TickBitmap
                 .nextInitializedTickWithinOneWord(
                     currentState.tick,
                     tickSpacing,
-                    zeroForOne
+                    zeroForOne,
+                    pool
                 );
             // ensure that we do not overshoot the min/max tick, as the tick bitmap is not aware of these bounds
             if (step.tickNext < TickMath.MIN_TICK) {
@@ -168,7 +169,10 @@ contract CFMMQuoter {
             if (currentState.sqrtPriceX96 == step.sqrtPriceNextX96) {
                 if (step.initialized) {
                     ///@notice Get the net liquidity after crossing the tick.
-                    int128 liquidityNet = ticks.cross(step.tickNext);
+                    (, int128 liquidityNet, , , , , , ) = IUniswapV3Pool(
+                        pool
+                    ).ticks(step.tickNext);
+
                     ///@notice If swapping token0 for token1 then negate the liquidtyNet.
 
                     if (zeroForOne) liquidityNet = -liquidityNet;
@@ -192,7 +196,7 @@ contract CFMMQuoter {
             }
         }
         ///@notice Return the simulated amount out as a negative value representing the amount recieved in the swap.
-        return currentState.amountCalculated;
+        return (currentState.amountCalculated, currentState.sqrtPriceX96);
     }
 
     ///@notice Helper function to calculate the sqrtPriceLimitX96 for a swap.
@@ -292,11 +296,13 @@ contract CFMMQuoter {
             ///@notice Set sqrtPriceStartX96.
             step.sqrtPriceStartX96 = currentState.sqrtPriceX96;
             ///@notice Set the tickNext, and if the tick is initialized.
-            (step.tickNext, step.initialized) = tickBitmap
+            ///@notice Set the tickNext, and if the tick is initialized.
+            (step.tickNext, step.initialized) = TickBitmap
                 .nextInitializedTickWithinOneWord(
                     currentState.tick,
                     tickSpacing,
-                    zeroForOne
+                    zeroForOne,
+                    lpAddressAToWeth
                 );
             // ensure that we do not overshoot the min/max tick, as the tick bitmap is not aware of these bounds
             if (step.tickNext < TickMath.MIN_TICK) {
@@ -334,7 +340,9 @@ contract CFMMQuoter {
             if (currentState.sqrtPriceX96 == step.sqrtPriceNextX96) {
                 if (step.initialized) {
                     ///@notice Get the net liquidity after crossing the tick.
-                    int128 liquidityNet = ticks.cross(step.tickNext);
+                    (, int128 liquidityNet, , , , , , ) = IUniswapV3Pool(
+                        lpAddressAToWeth
+                    ).ticks(step.tickNext);
                     ///@notice If swapping token0 for token1 then negate the liquidtyNet.
 
                     if (zeroForOne) liquidityNet = -liquidityNet;
